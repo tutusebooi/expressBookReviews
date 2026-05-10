@@ -1,126 +1,107 @@
 const express = require('express');
-const axios = require('axios');
-
 let router = express.Router();
 
-const booksAPI = "http://localhost:5000/";
+let books = require("./booksdb.js");
 
-// Get all books using async/await with Axios
-router.get('/', async function (req, res) {
+// Get all books using Promise
+router.get('/', function (req, res) {
 
-    try {
+    const getBooks = new Promise((resolve, reject) => {
 
-        const response = await axios.get(booksAPI);
+        if (books) {
+            resolve(books);
+        } else {
+            reject("Books not found");
+        }
+    });
 
-        return res.status(200).json(response.data);
-
-    } catch (error) {
-
+    getBooks.then((data) => {
+        return res.status(200).json(data);
+    }).catch((error) => {
         return res.status(500).json({
-            message: "Error retrieving books"
+            message: error
         });
-    }
+    });
 });
 
 
-// Get book details based on ISBN using async/await with Axios
-router.get('/isbn/:isbn', async function (req, res) {
+// Get book by ISBN using Promise
+router.get('/isbn/:isbn', function (req, res) {
 
     const isbn = req.params.isbn;
 
-    try {
-
-        const response = await axios.get(booksAPI);
-
-        const books = response.data;
+    const getBook = new Promise((resolve, reject) => {
 
         if (books[isbn]) {
-
-            return res.status(200).json(books[isbn]);
-
+            resolve(books[isbn]);
         } else {
-
-            return res.status(404).json({
-                message: "Book not found"
-            });
+            reject("Book not found");
         }
+    });
 
-    } catch (error) {
-
-        return res.status(500).json({
-            message: "Error retrieving book"
+    getBook.then((data) => {
+        return res.status(200).json(data);
+    }).catch((error) => {
+        return res.status(404).json({
+            message: error
         });
-    }
+    });
 });
 
 
-// Get book details based on author using async/await with Axios
-router.get('/author/:author', async function (req, res) {
+// Get books by Author using Promise
+router.get('/author/:author', function (req, res) {
 
     const author = req.params.author.toLowerCase();
 
-    try {
+    const getBooksByAuthor = new Promise((resolve, reject) => {
 
-        const response = await axios.get(booksAPI);
-
-        const books = Object.values(response.data);
-
-        const filteredBooks = books.filter(
+        const filteredBooks = Object.values(books).filter(
             (book) => book.author.toLowerCase() === author
         );
 
         if (filteredBooks.length > 0) {
-
-            return res.status(200).json(filteredBooks);
-
+            resolve(filteredBooks);
         } else {
-
-            return res.status(404).json({
-                message: "Author not found"
-            });
+            reject("Author not found");
         }
+    });
 
-    } catch (error) {
-
-        return res.status(500).json({
-            message: "Error retrieving books"
+    getBooksByAuthor.then((data) => {
+        return res.status(200).json(data);
+    }).catch((error) => {
+        return res.status(404).json({
+            message: error
         });
-    }
+    });
 });
 
 
-// Get book details based on title using async/await with Axios
-router.get('/title/:title', async function (req, res) {
+// Get books by Title using Promise
+router.get('/title/:title', function (req, res) {
 
     const title = req.params.title.toLowerCase();
 
-    try {
+    const getBooksByTitle = new Promise((resolve, reject) => {
 
-        const response = await axios.get(booksAPI);
-
-        const books = Object.values(response.data);
-
-        const filteredBooks = books.filter(
+        const filteredBooks = Object.values(books).filter(
             (book) => book.title.toLowerCase() === title
         );
 
         if (filteredBooks.length > 0) {
-
-            return res.status(200).json(filteredBooks);
-
+            resolve(filteredBooks);
         } else {
-
-            return res.status(404).json({
-                message: "Title not found"
-            });
+            reject("Title not found");
         }
+    });
 
-    } catch (error) {
-
-        return res.status(500).json({
-            message: "Error retrieving books"
+    getBooksByTitle.then((data) => {
+        return res.status(200).json(data);
+    }).catch((error) => {
+        return res.status(404).json({
+            message: error
         });
-    }
+    });
 });
 
 module.exports.general = router;
