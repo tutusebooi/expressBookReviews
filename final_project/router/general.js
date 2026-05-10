@@ -5,10 +5,11 @@ let router = express.Router();
 
 const booksAPI = "http://localhost:5000/";
 
-// Get all books using async callback function
+// Get all books using async/await with Axios
 router.get('/', async function (req, res) {
 
     try {
+
         const response = await axios.get(booksAPI);
 
         return res.status(200).json(response.data);
@@ -16,13 +17,13 @@ router.get('/', async function (req, res) {
     } catch (error) {
 
         return res.status(500).json({
-            message: "Error fetching books"
+            message: "Error retrieving books"
         });
     }
 });
 
 
-// Get book details based on ISBN using async callback function
+// Get book details based on ISBN using async/await with Axios
 router.get('/isbn/:isbn', async function (req, res) {
 
     const isbn = req.params.isbn;
@@ -33,11 +34,9 @@ router.get('/isbn/:isbn', async function (req, res) {
 
         const books = response.data;
 
-        const book = books[isbn];
+        if (books[isbn]) {
 
-        if (book) {
-
-            return res.status(200).json(book);
+            return res.status(200).json(books[isbn]);
 
         } else {
 
@@ -49,13 +48,13 @@ router.get('/isbn/:isbn', async function (req, res) {
     } catch (error) {
 
         return res.status(500).json({
-            message: "Error fetching book"
+            message: "Error retrieving book"
         });
     }
 });
 
 
-// Get book details based on author using async callback function
+// Get book details based on author using async/await with Axios
 router.get('/author/:author', async function (req, res) {
 
     const author = req.params.author.toLowerCase();
@@ -84,13 +83,13 @@ router.get('/author/:author', async function (req, res) {
     } catch (error) {
 
         return res.status(500).json({
-            message: "Error fetching books"
+            message: "Error retrieving books"
         });
     }
 });
 
 
-// Get book details based on title using async callback function
+// Get book details based on title using async/await with Axios
 router.get('/title/:title', async function (req, res) {
 
     const title = req.params.title.toLowerCase();
@@ -119,7 +118,7 @@ router.get('/title/:title', async function (req, res) {
     } catch (error) {
 
         return res.status(500).json({
-            message: "Error fetching books"
+            message: "Error retrieving books"
         });
     }
 });
